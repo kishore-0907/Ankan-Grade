@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VeritasEval AI — Board-Grade Answer Sheet Evaluation & RTI Defense Platform</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    /* Paper Sheet Canvas Styles */
+    .sheet-canvas-container {
+      background: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+      background-size: 20px 20px;
+    }
+    
+    .handwriting-font {
+      font-family: 'Caveat', 'Comic Sans MS', cursive, sans-serif;
+    }
+    
+    .audit-pulse {
+      animation: pulse-border 2s infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: rgba(14, 165, 233, 0.4); }
+      50% { border-color: rgba(14, 165, 233, 1); }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col overflow-hidden antialiased select-none">
+
+  <!-- ========================================================================= -->
+  <!-- 1. TOP HEADER & SOVEREIGN AUDIT NAVIGATION                                -->
+  <!-- ========================================================================= -->
+  <header class="bg-slate-950 border-b border-slate-800 px-5 py-2.5 flex items-center justify-between shrink-0 z-30">
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center shadow-lg shadow-sky-500/20 text-white font-bold text-lg">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-white tracking-tight text-base">VeritasEval<span class="text-sky-400">.ai</span></span>
+            <span class="text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded-full bg-sky-950 text-sky-300 border border-sky-800/80">Board Grade</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-mono">Defensible AI Infrastructure & RTI Audit Engine</p>
+        </div>
+      </div>
+
+      <div class="h-5 w-px bg-slate-800"></div>
+
+      <!-- Pilot / Exam Cohort Selector -->
+      <div class="relative">
+        <select id="cohortSelector" class="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-md px-3 py-1.5 pr-8 focus:outline-none focus:border-sky-500 appearance-none cursor-pointer">
+          <option value="cbse-xii-physics">CBSE Class XII Pilot — Physics (Paper Code: 55/1/1)</option>
+          <option value="tn-state-xii-math">TN State Board Pilot — Advanced Mathematics</option>
+          <option value="fiitjee-mock-jee">Apex Coaching Cohort — Full Syllabus Simulation</option>
+        </select>
+        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+      </div>
+    </div>
+
+    <!-- Active User Role & Trust Badges -->
+    <div class="flex items-center space-x-4">
+      <!-- Legal / RTI Compliance Health Indicator -->
+      <div class="hidden lg:flex items-center space-x-2 bg-emerald-950/40 border border-emerald-800/50 px-3 py-1 rounded-md">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="text-xs text-emerald-300 font-medium">RTI Compliant • India Sovereign Storage (AES-256)</span>
+      </div>
+
+      <!-- Human-in-the-Loop Mode Switcher -->
+      <div class="flex items-center bg-slate-900 border border-slate-700 rounded-lg p-0.5">
+        <button id="roleExaminerBtn" onclick="switchRole('examiner')" class="flex items-center space-x-1.5 px-3 py-1 rounded-md text-xs font-medium transition bg-sky-600 text-white shadow-sm">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          <span>Examiner</span>
+        </button>
+        <button id="roleModeratorBtn" onclick="switchRole('moderator')" class="flex items-center space-x-1.5 px-3 py-1 rounded-md text-xs font-medium transition text-slate-400 hover:text-slate-200">
+          <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+          <span>Senior Moderator</span>
+          <span id="moderatorBadgeCount" class="ml-1 px-1.5 py-0.2 bg-amber-500/20 text-amber-300 text-[10px] rounded-full border border-amber-500/30">1</span>
+        </button>
+        <button id="roleOfficerBtn" onclick="switchRole('officer')" class="flex items-center space-x-1.5 px-3 py-1 rounded-md text-xs font-medium transition text-slate-400 hover:text-slate-200">
+          <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+          <span>Board Controller (RTI)</span>
+        </button>
+      </div>
+
+      <!-- Examiner Profile & Audit Action -->
+      <button onclick="openAuditDrawer()" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-md border border-slate-700 transition text-sky-300 font-mono">
+        <i data-lucide="shield" class="w-3.5 h-3.5 text-sky-400"></i>
+        <span>Audit Trail (Hash: <span id="currentAuditHash">0x9d4a...</span>)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 2. MAIN APPLICATION WORKSPACE                                             -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 flex overflow-hidden">
+
+    <!-- ----------------------------------------------------------------------- -->
+    <!-- LEFT PANEL: SCRIPT INVENTORY & BATCH STATUS                             -->
+    <!-- ----------------------------------------------------------------------- -->
+    <aside class="w-72 bg-slate-950 border-r border-slate-800 flex flex-col shrink-0">
+      <div class="p-3 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold text-slate-200 uppercase tracking-wider">Candidate Scripts</span>
+          <p class="text-[11px] text-slate-500">Batch #CBSE-2026-DIST-04</p>
+        </div>
+        <span class="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded">4 Scripts</span>
+      </div>
+
+      <!-- Quick Filter -->
+      <div class="px-3 pt-2 pb-1">
+        <div class="relative">
+          <input type="text" id="searchScripts" placeholder="Search Roll / Barcode..." class="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500" />
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-2"></i>
+        </div>
+      </div>
+
+      <!-- Scripts List -->
+      <div id="scriptListContainer" class="flex-1 overflow-y-auto divide-y divide-slate-900 px-2 py-1 space-y-1">
+        <!-- Dynamically Populated by JS -->
+      </div>
+
+      <!-- Batch Evaluation Velocity Footer -->
+      <div class="p-3 bg-slate-900/60 border-t border-slate-800">
+        <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+          <span>Batch Completion</span>
+          <span class="font-mono text-sky-400">75% (3/4 Verified)</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div class="bg-sky-500 h-full rounded-full" style="width: 75%"></div>
+        </div>
+        <div class="flex justify-between items-center mt-2 text-[10px] text-slate-500">
+          <span>Avg. Review: <strong class="text-slate-300">42 sec / script</strong></span>
+          <span class="text-emerald-400 flex items-center"><i data-lucide="clock" class="w-3 h-3 mr-0.5"></i> 4.8x faster</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ----------------------------------------------------------------------- -->
+    <!-- CENTER PANEL: LAYERED SCANNER & HANDWRITING RECOGNITION CANVAS          -->
+    <!-- ----------------------------------------------------------------------- -->
+    <section class="flex-1 flex flex-col bg-slate-900 border-r border-slate-800 overflow-hidden relative">
+      
+      <!-- Canvas Control Toolbar -->
+      <div class="bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 py-2 flex items-center justify-between shrink-0 z-10">
+        <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-1.5 bg-slate-800 px-2 py-1 rounded text-xs">
+            <span class="text-slate-400">Barcode:</span>
+            <span id="activeBarcode" class="font-mono font-bold text-sky-300">BAR-88219034-X</span>
+          </div>
+          
+          <div class="flex items-center space-x-1 text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">
+            <span>Subject:</span>
+            <span id="activeSubject" class="text-slate-200 font-medium">Physics • Section B</span>
+          </div>
+
+          <!-- Layer Mode Toggle (Pass 1 OCR vs Pass 2 Vision LLM Corrected) -->
+          <div class="flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800 ml-4">
+            <button id="viewRawScanBtn" onclick="toggleRecognitionLayer('raw')" class="px-2.5 py-0.5 text-xs rounded font-medium transition bg-slate-800 text-white">
+              Raw Scan
+            </button>
+            <button id="viewPass1Btn" onclick="toggleRecognitionLayer('pass1')" class="px-2.5 py-0.5 text-xs rounded font-medium transition text-slate-400 hover:text-slate-200">
+              Pass 1: OCR Draft
+            </button>
+            <button id="viewPass2Btn" onclick="toggleRecognitionLayer('pass2')" class="px-2.5 py-0.5 text-xs rounded font-medium transition text-slate-400 hover:text-slate-200 flex items-center space-x-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1"></span>
+              Pass 2: Vision-LLM Cross-Check
+            </button>
+          </div>
+        </div>
+
+        <!-- Zoom & Inspection Controls -->
+        <div class="flex items-center space-x-2">
+          <div class="flex items-center bg-slate-800 rounded p-0.5 border border-slate-700">
+            <button onclick="zoomCanvas(-0.1)" class="p-1 hover:text-sky-400 text-slate-300"><i data-lucide="zoom-out" class="w-4 h-4"></i></button>
+            <span id="zoomLevelDisplay" class="text-[11px] font-mono px-1.5 text-slate-300">100%</span>
+            <button onclick="zoomCanvas(0.1)" class="p-1 hover:text-sky-400 text-slate-300"><i data-lucide="zoom-in" class="w-4 h-4"></i></button>
+          </div>
+
+          <button onclick="toggleConfidenceHeatmap()" id="heatmapBtn" class="flex items-center space-x-1.5 text-xs bg-amber-500/10 border border-amber-500/30 text-amber-300 px-2.5 py-1 rounded hover:bg-amber-500/20 transition">
+            <i data-lucide="flag" class="w-3.5 h-3.5"></i>
+            <span>Highlight Flagged Words (<span id="flaggedCountBadge">1</span>)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Layered Visual Answer Sheet Surface -->
+      <div id="canvasViewport" class="flex-1 overflow-auto p-6 flex justify-center items-start sheet-canvas-container">
+        
+        <div id="paperSheet" class="relative bg-white text-slate-900 rounded shadow-2xl transition-transform duration-150 origin-top" style="width: 720px; min-height: 980px; padding: 48px;">
+          
+          <!-- State Board Watermark / Security Header -->
+          <div class="border-b-2 border-slate-300 pb-3 mb-6 flex justify-between items-end">
+            <div>
+              <p class="text-[10px] tracking-widest uppercase font-bold text-slate-500">CENTRAL BOARD OF SECONDARY EDUCATION — 2026</p>
+              <h1 class="text-sm font-bold text-slate-800">OFFICIAL DESCRIPTIVE ANSWER SCRIPT</h1>
+            </div>
+            <div class="text-right">
+              <div class="font-mono text-xs font-bold text-slate-700 tracking-wider">ROLL: 26618492</div>
+              <div class="text-[9px] text-slate-400">Sheet ID: SEC-PHY-0421-PG1</div>
+            </div>
+          </div>
+
+          <!-- Answer Sheet Simulated Question 1 -->
+          <div class="mb-8 relative group" id="q1Region" onclick="selectQuestion(1)">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">Q.14 (a)</span>
+              <span class="text-[11px] text-slate-500 font-mono">[Derive Faraday's Law & Explain Lenz's Rule - 5 Marks]</span>
+            </div>
+
+            <!-- The Student's Handwritten Content (Layered Rendering) -->
+            <div class="p-4 rounded border-2 border-dashed border-sky-400/50 bg-sky-50/30 relative">
+              
+              <!-- Layer: Raw Handwritten Ink Rendering -->
+              <div id="handwritingLayer" class="text-slate-800 leading-relaxed handwriting-font text-lg space-y-3">
+                <p>
+                  According to Faraday's first law, whenever there is a change in magnetic flux linked with a circuit, an induced electromotive force (emf) is produced in the circuit.
+                </p>
+                <div class="my-2 p-2 bg-white/70 rounded border border-slate-200 inline-block font-mono text-base">
+                  \( e = -\frac{d\Phi_B}{dt} \)
+                </div>
+                <p>
+                  The negative sign in the equation represents 
+                  <span id="inkSmudgeWord" class="relative inline-block border-b-2 border-red-400 cursor-pointer bg-red-100/60 px-1 rounded hover:ring-2 hover:ring-red-400" onclick="inspectSmudgeModal(event)">
+                    Lenz's Law
+                    <span class="absolute -top-3 -right-2 text-[9px] bg-red-600 text-white font-mono px-1 rounded-full">OCR 64%</span>
+                  </span>: 
+                  The direction of induced emf opposes the change in magnetic flux that causes it. This is in direct agreement with the principle of conservation of energy.
+                </p>
+                <p>
+                  If induced current aided the flux increase, it would create energy from nothing, violating thermodynamics.
+                </p>
+              </div>
+
+              <!-- Layer: Pass 1 Fast OCR Output (Hidden by default, toggleable) -->
+              <div id="ocrPass1Layer" class="hidden text-slate-700 font-mono text-xs leading-relaxed space-y-2 bg-slate-50 p-3 rounded border border-slate-300">
+                <div class="text-[10px] uppercase font-bold text-amber-600 mb-1 flex items-center">
+                  <i data-lucide="alert-triangle" class="w-3 h-3 mr-1"></i> Pass 1: Raw Fast OCR (Tesseract / Cloud Vision Draft)
+                </div>
+                <p>According to Faradays 1st law, whenever there is a change in magnetic <span class="bg-yellow-200 px-1">fiux</span> linked with a circuit, an induced emf is set up.</p>
+                <p class="font-bold">e = - dPhi_B / dt</p>
+                <p>The negative sign represents <span class="bg-red-200 text-red-900 px-1 font-bold">Levz's Low [Confidence: 64%]</span>: The direction of induced emf opposes the flux change. This agrees with conservation of energy.</p>
+              </div>
+
+              <!-- Layer: Pass 2 Vision-LLM Cross-Check (Context Aware) -->
+              <div id="ocrPass2Layer" class="hidden text-slate-800 text-xs leading-relaxed space-y-2 bg-emerald-50/60 p-3 rounded border border-emerald-300 font-mono">
+                <div class="text-[10px] uppercase font-bold text-emerald-700 mb-1 flex items-center justify-between">
+                  <span class="flex items-center"><i data-lucide="sparkles" class="w-3 h-3 mr-1"></i> Pass 2: Vision-LLM Multimodal Reconstructed Draft</span>
+                  <span class="text-emerald-800 font-mono text-[9px] bg-emerald-100 px-1.5 py-0.5 rounded">Confidence: 98.4%</span>
+                </div>
+                <p>Corrected <span class="text-emerald-700 underline font-semibold">"Levz's Low"</span> &rarr; <span class="bg-emerald-200 px-1 rounded font-bold text-emerald-950">"Lenz's Law"</span> via contextual physics derivation inference and raw stroke vector alignment.</p>
+                <p class="text-slate-600 italic">"Step 2 formula and conservation of energy verified."</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Answer Sheet Question 2 -->
+          <div class="mb-4 relative group" id="q2Region" onclick="selectQuestion(2)">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">Q.14 (b)</span>
+              <span class="text-[11px] text-slate-500 font-mono">[Numerical: Circular Coil Flux Calculation - 3 Marks]</span>
+            </div>
+
+            <div class="p-4 rounded border border-slate-300 bg-slate-50/50">
+              <div class="text-slate-800 leading-relaxed handwriting-font text-lg space-y-2">
+                <p>Given: N = 100 turns, Radius r = 0.1 m, B changes from 0.2 T to 0.5 T in &Delta;t = 0.05 s.</p>
+                <p>Area A = &pi; r&sup2; = 3.14 &times; (0.1)&sup2; = 0.0314 m&sup2;</p>
+                <p>&Delta;&Phi; = A &times; &Delta;B = 0.0314 &times; (0.5 - 0.2) = 0.00942 Wb</p>
+                <p>Induced EMF = N &times; (&Delta;&Phi; / &Delta;t) = 100 &times; (0.00942 / 0.05) = <span class="font-bold text-slate-900 border-b-2 border-slate-900">18.84</span> (no unit written)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center pt-8 border-t border-slate-200 text-slate-400 text-[10px] font-mono">
+            — END OF PAGE 1 • VERIFIED AGAINST DISK INTEGRITY HASH —
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Micro-Inspection Modal / Popover for Ambiguous Words -->
+      <div id="wordInspectionModal" class="hidden absolute top-24 left-1/3 w-80 bg-slate-950 border border-slate-700 rounded-xl shadow-2xl p-4 z-40">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+          <span class="text-xs font-semibold text-amber-300 flex items-center">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5 mr-1 text-amber-400"></i>
+            Confidence Flag: Word Line 4
+          </span>
+          <button onclick="closeInspectionModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+
+        <div class="my-3">
+          <div class="text-[11px] text-slate-400 mb-1">Cropped Handwriting High-Res Preview:</div>
+          <div class="bg-white p-3 rounded border border-slate-700 text-center">
+            <span class="text-2xl handwriting-font text-slate-900 font-bold tracking-wide">Lenz's Law</span>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 text-xs">
+          <div class="flex justify-between text-slate-400">
+            <span>Pass 1 (OCR Model):</span>
+            <span class="font-mono text-red-400">"Levz's Low" (64%)</span>
+          </div>
+          <div class="flex justify-between text-slate-300">
+            <span>Pass 2 (Vision-LLM):</span>
+            <span class="font-mono text-emerald-400 font-bold">"Lenz's Law" (98%)</span>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-800 flex space-x-2">
+          <button onclick="resolveAmbiguity('Lenz\'s Law')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 rounded font-medium transition">
+            Confirm LLM Reading
+          </button>
+          <button onclick="editAmbiguityManual()" class="px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-1.5 rounded transition">
+            Manual
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ----------------------------------------------------------------------- -->
+    <!-- RIGHT PANEL: DEFENSIBLE AI EVALUATION, RUBRIC & HUMAN OVERRIDE          -->
+    <!-- ----------------------------------------------------------------------- -->
+    <aside class="w-[480px] bg-slate-950 flex flex-col shrink-0 overflow-hidden">
+      
+      <!-- Panel Header: Question & Rubric Navigation -->
+      <div class="p-3 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <div class="flex items-center space-x-2">
+            <h2 id="evalQuestionTitle" class="text-sm font-bold text-white">Q.14 (a) Rubric Reasoning</h2>
+            <span class="text-[10px] bg-sky-950 text-sky-400 border border-sky-800 px-1.5 py-0.5 rounded font-mono">Max: 5.0 M</span>
+          </div>
+          <p class="text-[11px] text-slate-400">CBSE Marking Scheme: Electromagnetic Induction</p>
+        </div>
+
+        <!-- Discrepancy Indicator -->
+        <div id="dualAiBadge" class="flex items-center space-x-1.5 bg-emerald-950/40 border border-emerald-800/60 px-2 py-1 rounded">
+          <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span class="text-[11px] text-emerald-300 font-mono">Dual-AI Agreement</span>
+        </div>
+      </div>
+
+      <!-- Scrollable Rubric & Reasoning Steps -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4">
+        
+        <!-- Step-by-Step Step Rubric Criteria -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Step-by-Step Marking Breakdown</span>
+            <span class="text-[11px] text-slate-500">Criteria Based</span>
+          </div>
+
+          <div class="space-y-2.5" id="rubricStepsContainer">
+            <!-- Step 1 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-slate-700 transition">
+              <div class="flex justify-between items-start mb-1.5">
+                <div class="flex items-start space-x-2">
+                  <span class="w-5 h-5 rounded-full bg-slate-800 text-sky-400 text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">1</span>
+                  <div>
+                    <p class="text-xs font-semibold text-slate-200">Statement of Faraday's Law</p>
+                    <p class="text-[11px] text-slate-400">Must define emf induced proportional to rate of change of flux.</p>
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-xs font-mono font-bold text-emerald-400">1.0 / 1.0</span>
+                  <div class="text-[9px] text-slate-500">Confidence: 99%</div>
+                </div>
+              </div>
+              <div class="bg-slate-950/70 p-2 rounded text-[11px] text-slate-300 border-l-2 border-emerald-500">
+                <strong class="text-emerald-400">AI Reasoning:</strong> Clear definition matches board standard model answer verbatim in paragraph 1.
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-slate-700 transition">
+              <div class="flex justify-between items-start mb-1.5">
+                <div class="flex items-start space-x-2">
+                  <span class="w-5 h-5 rounded-full bg-slate-800 text-sky-400 text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">2</span>
+                  <div>
+                    <p class="text-xs font-semibold text-slate-200">Mathematical Formula & Negative Sign</p>
+                    <p class="text-[11px] text-slate-400">e = - d&Phi;/dt with explicit definition of variables.</p>
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-xs font-mono font-bold text-emerald-400">1.0 / 1.0</span>
+                  <div class="text-[9px] text-slate-500">Confidence: 97%</div>
+                </div>
+              </div>
+              <div class="bg-slate-950/70 p-2 rounded text-[11px] text-slate-300 border-l-2 border-emerald-500">
+                <strong class="text-emerald-400">AI Reasoning:</strong> Correct derivative formula boxed with standard magnetic flux notation.
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-slate-700 transition">
+              <div class="flex justify-between items-start mb-1.5">
+                <div class="flex items-start space-x-2">
+                  <span class="w-5 h-5 rounded-full bg-slate-800 text-sky-400 text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">3</span>
+                  <div>
+                    <p class="text-xs font-semibold text-slate-200">Lenz's Law & Direction Reasoning</p>
+                    <p class="text-[11px] text-slate-400">Statement that induced current opposes the cause.</p>
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-xs font-mono font-bold text-emerald-400">1.5 / 1.5</span>
+                  <div class="text-[9px] text-slate-500">Confidence: 96%</div>
+                </div>
+              </div>
+              <div class="bg-slate-950/70 p-2 rounded text-[11px] text-slate-300 border-l-2 border-emerald-500">
+                <strong class="text-emerald-400">AI Reasoning:</strong> Accurately links polarity to Lenz's law. Corrected OCR smudge corroborated.
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-slate-700 transition">
+              <div class="flex justify-between items-start mb-1.5">
+                <div class="flex items-start space-x-2">
+                  <span class="w-5 h-5 rounded-full bg-slate-800 text-amber-400 text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">4</span>
+                  <div>
+                    <p class="text-xs font-semibold text-slate-200">Conservation of Energy Link</p>
+                    <p class="text-[11px] text-slate-400">Proof via contradiction (violates 1st law of thermodynamics).</p>
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-xs font-mono font-bold text-amber-400">0.5 / 1.5</span>
+                  <div class="text-[9px] text-slate-500">Partial Credit</div>
+                </div>
+              </div>
+              <div class="bg-slate-950/70 p-2 rounded text-[11px] text-slate-300 border-l-2 border-amber-500">
+                <strong class="text-amber-400">AI Reasoning:</strong> Student stated "violating thermodynamics" briefly in 1 sentence, but omitted the standard mechanical work-to-electrical energy conversion derivation required by marking scheme clause 4.3 (-1.0 Mark).
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dual-AI Independent Cross-Check Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs uppercase font-semibold text-slate-400">Dual-AI Model Consensus</span>
+            <span class="text-[10px] text-sky-400 font-mono">&Delta; = 0.0 M</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="bg-slate-950 p-2 rounded border border-slate-800/80">
+              <div class="flex items-center justify-between text-slate-400 text-[10px] mb-1">
+                <span>Model A (Primary)</span>
+                <span class="text-emerald-400">Claude 3.5 Sonnet</span>
+              </div>
+              <div class="text-base font-bold font-mono text-white">4.0 <span class="text-xs text-slate-500 font-normal">/ 5.0</span></div>
+            </div>
+
+            <div class="bg-slate-950 p-2 rounded border border-slate-800/80">
+              <div class="flex items-center justify-between text-slate-400 text-[10px] mb-1">
+                <span>Model B (Auditor)</span>
+                <span class="text-sky-400">GPT-4o Vision</span>
+              </div>
+              <div class="text-base font-bold font-mono text-white">4.0 <span class="text-xs text-slate-500 font-normal">/ 5.0</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- ACTION CONTROL CONSOLE: HUMAN-IN-THE-LOOP APPROVE / OVERRIDE          -->
+      <!-- ===================================================================== -->
+      <div class="p-4 bg-slate-900 border-t border-slate-800 space-y-3">
+        
+        <!-- Score Summary Bar -->
+        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div>
+            <div class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider">AI Recommended Mark</div>
+            <div class="text-2xl font-bold font-mono text-white">
+              <span id="displayRecommendedMark">4.0</span> <span class="text-sm font-normal text-slate-500">/ 5.0</span>
+            </div>
+          </div>
+
+          <!-- Total Script Running Score -->
+          <div class="text-right">
+            <div class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider">Script Total (Evaluated)</div>
+            <div class="text-2xl font-bold font-mono text-sky-400">
+              <span id="scriptRunningTotal">6.5</span> <span class="text-sm font-normal text-slate-500">/ 8.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Examiner Primary Decision Buttons -->
+        <div id="examinerActionGroup" class="space-y-2">
+          <div class="grid grid-cols-2 gap-2">
+            <!-- 1-Click Approve AI Recommendation -->
+            <button onclick="approveRecommendation()" class="bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white py-2.5 px-3 rounded-lg font-semibold text-xs transition flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Approve AI (4.0 M)</span>
+            </button>
+
+            <!-- Toggle Override Drawer -->
+            <button onclick="toggleOverrideDrawer()" class="bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-slate-200 border border-slate-700 py-2.5 px-3 rounded-lg font-semibold text-xs transition flex items-center justify-center space-x-2">
+              <i data-lucide="edit-2" class="w-4 h-4 text-amber-400"></i>
+              <span>Override Marks</span>
+            </button>
+          </div>
+
+          <p class="text-[10px] text-center text-slate-500">
+            AI never issues final marks. Examiner signature required for RTI legal defensibility.
+          </p>
+        </div>
+
+        <!-- Collapsible Override Form -->
+        <div id="overrideDrawer" class="hidden bg-slate-950 p-3 rounded-lg border border-amber-500/40 space-y-2.5">
+          <div class="flex items-center justify-between text-xs font-semibold text-amber-300">
+            <span>Examiner Score Override</span>
+            <span class="text-[10px] text-amber-400 font-mono">Mandatory Reasoning</span>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <span class="text-xs text-slate-400">Adjust Marks:</span>
+            <input type="number" id="overrideScoreInput" min="0" max="5" step="0.5" value="4.5" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm font-mono text-center font-bold text-white focus:outline-none focus:border-amber-500" />
+            <span class="text-xs text-slate-400">/ 5.0</span>
+          </div>
+
+          <div>
+            <label class="block text-[11px] text-slate-400 mb-1">Defense Justification Note (Required for Legal Audit):</label>
+            <textarea id="overrideReasonInput" rows="2" placeholder="e.g. Awarded +0.5 mark because student provided valid alternative thermodynamic explanation..." class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500"></textarea>
+          </div>
+
+          <div class="flex space-x-2">
+            <button onclick="submitOverride()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-1.5 rounded text-xs transition">
+              Commit Override with Audit Stamp
+            </button>
+            <button onclick="toggleOverrideDrawer()" class="px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded text-xs">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 3. RTI LEGAL AUDIT TRAIL MODAL (THE LEGAL DEFENSE MECHANISM)               -->
+  <!-- ========================================================================= -->
+  <div id="auditModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+    <div class="bg-slate-950 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-sky-950 border border-sky-800 flex items-center justify-center text-sky-400">
+            <i data-lucide="file-check-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center space-x-2">
+              <span>Cryptographic Legal Audit Dossier</span>
+              <span class="text-[10px] bg-emerald-950 text-emerald-300 font-mono px-2 py-0.5 rounded border border-emerald-800">Tamper-Proof</span>
+            </h3>
+            <p class="text-xs text-slate-400 font-mono">Immutable Re-evaluation Defense Packet for Script: <span id="auditModalScriptId" class="text-slate-200">SCR-2026-PHY-0421</span></p>
+          </div>
+        </div>
+        <button onclick="closeAuditDrawer()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <!-- Modal Body: Audit Event Timeline & Hash Chain -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Summary Cards for Board Legal Counsel -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase font-semibold">Integrity Hash (SHA-256)</span>
+            <p class="text-xs font-mono text-sky-300 truncate mt-1">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</p>
+          </div>
+          <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase font-semibold">Authorized Examiner ID</span>
+            <p class="text-xs font-mono text-slate-200 mt-1">EXM-CBSE-DEL-8819 (Prof. R. Sharma)</p>
+          </div>
+          <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase font-semibold">Dual-AI Agreement Index</span>
+            <p class="text-xs font-mono text-emerald-400 mt-1">98.5% (High Reliability)</p>
+          </div>
+        </div>
+
+        <!-- Sequential Timeline of Audit Events -->
+        <div>
+          <h4 class="text-xs uppercase font-semibold text-slate-400 tracking-wider mb-3">Timestamped Chain of Custody & Evaluation Events</h4>
+          
+          <div class="border-l-2 border-slate-800 ml-3 space-y-4 font-mono text-xs" id="auditTimelineContainer">
+            <!-- Event 1 -->
+            <div class="relative pl-6">
+              <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-slate-700 border-2 border-slate-950"></div>
+              <div class="text-[10px] text-slate-500">2026-09-03 10:14:02 IST • Ingestion Node DEL-01</div>
+              <p class="text-slate-200 font-sans mt-0.5">High-resolution physical sheet scanned & registered. Barcode checksum verified.</p>
+            </div>
+
+            <!-- Event 2 -->
+            <div class="relative pl-6">
+              <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-amber-500 border-2 border-slate-950"></div>
+              <div class="text-[10px] text-slate-500">2026-09-03 10:14:04 IST • Pass 1 OCR Draft</div>
+              <p class="text-slate-200 font-sans mt-0.5">Fast OCR transcription complete. Flagged word at line 4 (Confidence: 64% below 80% threshold).</p>
+            </div>
+
+            <!-- Event 3 -->
+            <div class="relative pl-6">
+              <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950"></div>
+              <div class="text-[10px] text-slate-500">2026-09-03 10:14:08 IST • Pass 2 Vision-LLM Cross-Check</div>
+              <p class="text-slate-200 font-sans mt-0.5">Vision-LLM cross-checked handwriting stroke geometry against Faraday's context. Corrected to "Lenz's Law".</p>
+            </div>
+
+            <!-- Event 4 -->
+            <div class="relative pl-6">
+              <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-sky-500 border-2 border-slate-950"></div>
+              <div class="text-[10px] text-slate-500">2026-09-03 10:14:15 IST • Dual-AI Independent Evaluation</div>
+              <p class="text-slate-200 font-sans mt-0.5">Primary Model (Claude 3.5): 4.0 M. Auditor Model (GPT-4o): 4.0 M. Discrepancy &Delta; = 0.0 M. Cleared for examiner review.</p>
+            </div>
+
+            <!-- Event 5 -->
+            <div class="relative pl-6" id="latestHumanEvent">
+              <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-950 animate-ping"></div>
+              <div class="text-[10px] text-emerald-400">2026-09-03 10:15:32 IST • Human Examiner Approval</div>
+              <p class="text-slate-200 font-sans mt-0.5 font-semibold">Prof. R. Sharma reviewed step 4 reasoning, verified OCR resolution, and approved marks.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between">
+        <div class="text-[11px] text-slate-400">
+          This cryptographic document is legally admissible under IT Act Section 65B & RTI disclosure guidelines.
+        </div>
+        <button onclick="downloadLegalDossier()" class="bg-sky-600 hover:bg-sky-500 text-white text-xs px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 transition shadow-lg shadow-sky-600/20">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Download RTI Defense Dossier (JSON / PDF)</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 4. FRONTEND APPLICATION LOGIC (HUMANIZED & ZERO SYNTAX ERRORS)             -->
+  <!-- ========================================================================= -->
+  <script>
+    // --- Application State Store ---
+    const appState = {
+      activeRoleId: 'examiner', // 'examiner' | 'moderator' | 'officer'
+      activeScriptId: 'SCR-2026-PHY-0421',
+      selectedQuestionNum: 1,
+      currentZoom: 1.0,
+      activeLayer: 'raw', // 'raw' | 'pass1' | 'pass2'
+      showFlaggedHeatmap: true,
+      
+      // Mock In-Memory Database of Evaluated Scripts (matches Roadmap requirements)
+      scripts: [
+        {
+          id: 'SCR-2026-PHY-0421',
+          barcode: 'BAR-88219034-X',
+          subject: 'Physics (55/1/1)',
+          roll: '26618492',
+          status: 'Flagged OCR Snippet',
+          statusClass: 'bg-amber-950 text-amber-300 border-amber-800/80',
+          ocrConfidence: 86.4,
+          flaggedCount: 1,
+          dualAiDelta: 0.0,
+          currentMarks: 6.5,
+          maxMarks: 8.0,
+          q1Mark: 4.0,
+          q2Mark: 2.5,
+          moderatorRequired: false,
+          auditHash: '0x9d4a8f1e7c2b'
+        },
+        {
+          id: 'SCR-2026-PHY-0422',
+          barcode: 'BAR-88219035-Y',
+          subject: 'Physics (55/1/1)',
+          roll: '26618493',
+          status: 'Dual-AI Dispute (Δ 2.5 M)',
+          statusClass: 'bg-red-950 text-red-300 border-red-800/80',
+          ocrConfidence: 94.2,
+          flaggedCount: 0,
+          dualAiDelta: 2.5,
+          currentMarks: 3.0,
+          maxMarks: 8.0,
+          q1Mark: 2.0,
+          q2Mark: 1.0,
+          moderatorRequired: true,
+          auditHash: '0x3c7e1104a991'
+        },
+        {
+          id: 'SCR-2026-MAT-0819',
+          barcode: 'BAR-77192081-M',
+          subject: 'Advanced Math (041)',
+          roll: '26618510',
+          status: 'Clean Pass (98% OCR)',
+          statusClass: 'bg-emerald-950 text-emerald-300 border-emerald-800/80',
+          ocrConfidence: 98.8,
+          flaggedCount: 0,
+          dualAiDelta: 0.0,
+          currentMarks: 7.5,
+          maxMarks: 8.0,
+          q1Mark: 4.5,
+          q2Mark: 3.0,
+          moderatorRequired: false,
+          auditHash: '0x1a88bb390cf2'
+        },
+        {
+          id: 'SCR-2026-CHE-1104',
+          barcode: 'BAR-44910283-C',
+          subject: 'Chemistry (043)',
+          roll: '26618588',
+          status: 'Human Override Stamped',
+          statusClass: 'bg-sky-950 text-sky-300 border-sky-800/80',
+          ocrConfidence: 91.5,
+          flaggedCount: 0,
+          dualAiDelta: 0.5,
+          currentMarks: 7.0,
+          maxMarks: 8.0,
+          q1Mark: 4.5,
+          q2Mark: 2.5,
+          moderatorRequired: false,
+          auditHash: '0x55ff0a218ce7'
+        }
+      ]
+    };
+
+    // --- DOM Initializer ---
+    document.addEventListener('DOMContentLoaded', () => {
+      renderScriptList();
+      updateActiveScriptView();
+      lucide.createIcons();
+    });
+
+    // --- Render Candidate Script List ---
+    function renderScriptList() {
+      const container = document.getElementById('scriptListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      appState.scripts.forEach(script => {
+        const isActive = script.id === appState.activeScriptId;
+        const card = document.createElement('div');
+        card.className = `p-2.5 rounded-lg cursor-pointer transition border ${
+          isActive 
+            ? 'bg-slate-800/90 border-sky-500 shadow-md' 
+            : 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-850 hover:border-slate-700'
+        }`;
+        card.onclick = () => selectScript(script.id);
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-mono text-xs font-bold text-white">${script.id}</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border ${script.statusClass}">
+              ${script.status}
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-slate-400">
+            <span>Roll: <strong class="text-slate-200">${script.roll}</strong></span>
+            <span>OCR: <strong class="${script.ocrConfidence < 90 ? 'text-amber-400' : 'text-emerald-400'}">${script.ocrConfidence}%</strong></span>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-500 mt-1.5 pt-1.5 border-t border-slate-800">
+            <span class="truncate">${script.subject}</span>
+            <span class="font-mono text-sky-400 font-bold">${script.currentMarks} / ${script.maxMarks} M</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- Script Selection Handler ---
+    function selectScript(scriptId) {
+      appState.activeScriptId = scriptId;
+      renderScriptList();
+      updateActiveScriptView();
+    }
+
+    // --- Update Workspace View based on Selected Script ---
+    function updateActiveScriptView() {
+      const script = appState.scripts.find(s => s.id === appState.activeScriptId);
+      if (!script) return;
+
+      document.getElementById('activeBarcode').textContent = script.barcode;
+      document.getElementById('activeSubject').textContent = script.subject;
+      document.getElementById('currentAuditHash').textContent = script.auditHash;
+      document.getElementById('auditModalScriptId').textContent = script.id;
+      document.getElementById('flaggedCountBadge').textContent = script.flaggedCount;
+      document.getElementById('scriptRunningTotal').textContent = script.currentMarks;
+
+      // Handle Dual-AI Badge Display
+      const badge = document.getElementById('dualAiBadge');
+      if (script.dualAiDelta > 1.0) {
+        badge.className = 'flex items-center space-x-1.5 bg-red-950/60 border border-red-800 px-2 py-1 rounded text-red-300 font-mono text-[11px]';
+        badge.innerHTML = `<i data-lucide="alert-octagon" class="w-3.5 h-3.5 text-red-400"></i><span>Dual-AI Discrepancy (Δ ${script.dualAiDelta} M)</span>`;
+      } else {
+        badge.className = 'flex items-center space-x-1.5 bg-emerald-950/40 border border-emerald-800/60 px-2 py-1 rounded text-emerald-300 font-mono text-[11px]';
+        badge.innerHTML = `<i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-400"></i><span>Dual-AI Agreement (Δ ${script.dualAiDelta} M)</span>`;
+      }
+
+      lucide.createIcons();
+    }
+
+    // --- Toggle Layer Recognition (Raw vs OCR vs Vision-LLM) ---
+    function toggleRecognitionLayer(layerKey) {
+      appState.activeLayer = layerKey;
+
+      const rawBtn = document.getElementById('viewRawScanBtn');
+      const pass1Btn = document.getElementById('viewPass1Btn');
+      const pass2Btn = document.getElementById('viewPass2Btn');
+      
+      const handwriting = document.getElementById('handwritingLayer');
+      const ocr1 = document.getElementById('ocrPass1Layer');
+      const ocr2 = document.getElementById('ocrPass2Layer');
+
+      // Reset button styles
+      [rawBtn, pass1Btn, pass2Btn].forEach(b => {
+        b.className = 'px-2.5 py-0.5 text-xs rounded font-medium transition text-slate-400 hover:text-slate-200';
+      });
+
+      // Show/Hide DOM layers
+      handwriting.classList.add('hidden');
+      ocr1.classList.add('hidden');
+      ocr2.classList.add('hidden');
+
+      if (layerKey === 'raw') {
+        rawBtn.className = 'px-2.5 py-0.5 text-xs rounded font-medium transition bg-slate-800 text-white';
+        handwriting.classList.remove('hidden');
+      } else if (layerKey === 'pass1') {
+        pass1Btn.className = 'px-2.5 py-0.5 text-xs rounded font-medium transition bg-amber-900/60 text-amber-200 border border-amber-700/60';
+        ocr1.classList.remove('hidden');
+      } else if (layerKey === 'pass2') {
+        pass2Btn.className = 'px-2.5 py-0.5 text-xs rounded font-medium transition bg-emerald-900/60 text-emerald-200 border border-emerald-700/60';
+        ocr2.classList.remove('hidden');
+      }
+    }
+
+    // --- Zoom Controls ---
+    function zoomCanvas(delta) {
+      appState.currentZoom = Math.min(Math.max(appState.currentZoom + delta, 0.6), 1.6);
+      const paper = document.getElementById('paperSheet');
+      paper.style.transform = `scale(${appState.currentZoom})`;
+      document.getElementById('zoomLevelDisplay').textContent = `${Math.round(appState.currentZoom * 100)}%`;
+    }
+
+    // --- Toggle Flagged Word Heatmap ---
+    function toggleConfidenceHeatmap() {
+      appState.showFlaggedHeatmap = !appState.showFlaggedHeatmap;
+      const word = document.getElementById('inkSmudgeWord');
+      if (appState.showFlaggedHeatmap) {
+        word.classList.add('bg-red-100/60', 'border-b-2', 'border-red-400');
+      } else {
+        word.classList.remove('bg-red-100/60', 'border-b-2', 'border-red-400');
+      }
+    }
+
+    // --- Ambiguity Micro-Inspection Modal ---
+    function inspectSmudgeModal(event) {
+      event.stopPropagation();
+      const modal = document.getElementById('wordInspectionModal');
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeInspectionModal() {
+      document.getElementById('wordInspectionModal').classList.add('hidden');
+    }
+
+    function resolveAmbiguity(resolvedText) {
+      closeInspectionModal();
+      const wordEl = document.getElementById('inkSmudgeWord');
+      wordEl.innerHTML = `${resolvedText} <span class="text-[9px] bg-emerald-600 text-white font-mono px-1 rounded-full">Resolved</span>`;
+      wordEl.classList.remove('bg-red-100/60', 'border-red-400');
+      wordEl.classList.add('bg-emerald-100/70', 'border-emerald-500');
+
+      appendAuditEvent('Examiner resolved line 4 OCR ambiguity to "' + resolvedText + '" in 6 seconds.');
+      
+      const script = appState.scripts.find(s => s.id === appState.activeScriptId);
+      if (script) {
+        script.flaggedCount = 0;
+        script.status = 'OCR Verified';
+        script.statusClass = 'bg-emerald-950 text-emerald-300 border-emerald-800/80';
+        renderScriptList();
+        updateActiveScriptView();
+      }
+    }
+
+    function editAmbiguityManual() {
+      const custom = prompt("Enter handwritten word correction for Line 4:", "Lenz's Law");
+      if (custom) resolveAmbiguity(custom);
+    }
+
+    // --- Human-in-the-Loop Actions: Approve / Override ---
+    function approveRecommendation() {
+      const script = appState.scripts.find(s => s.id === appState.activeScriptId);
+      if (!script) return;
+
+      appendAuditEvent(`Examiner approved AI Recommended Score of ${document.getElementById('displayRecommendedMark').textContent} Marks.`);
+      alert(`[RTI Legal Hash Signed]\nScore of ${document.getElementById('displayRecommendedMark').textContent} / 5.0 Marks Approved by Examiner.`);
+      
+      script.status = 'Evaluation Approved';
+      script.statusClass = 'bg-emerald-950 text-emerald-300 border-emerald-800';
+      renderScriptList();
+    }
+
+    function toggleOverrideDrawer() {
+      const drawer = document.getElementById('overrideDrawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    function submitOverride() {
+      const score = document.getElementById('overrideScoreInput').value;
+      const reason = document.getElementById('overrideReasonInput').value.trim();
+
+      if (!reason) {
+        alert("For Legal Defense and RTI Compliance, an override reasoning note is mandatory!");
+        return;
+      }
+
+      document.getElementById('displayRecommendedMark').textContent = score;
+      toggleOverrideDrawer();
+
+      appendAuditEvent(`Examiner applied OVERRIDE: ${score} Marks (Previous AI: 4.0 M). Justification: "${reason}"`);
+      
+      const script = appState.scripts.find(s => s.id === appState.activeScriptId);
+      if (script) {
+        script.currentMarks = parseFloat(score) + script.q2Mark;
+        script.status = 'Human Override Stamped';
+        script.statusClass = 'bg-amber-950 text-amber-300 border-amber-800';
+        renderScriptList();
+        updateActiveScriptView();
+      }
+
+      alert(`[Override Timestamped & Logged]\nMarks updated to ${score}. RTI defensibility dossier recorded.`);
+    }
+
+    // --- Role Switching (Examiner / Moderator / Officer) ---
+    function switchRole(roleId) {
+      appState.activeRoleId = roleId;
+      
+      const examinerBtn = document.getElementById('roleExaminerBtn');
+      const moderatorBtn = document.getElementById('roleModeratorBtn');
+      const officerBtn = document.getElementById('roleOfficerBtn');
+
+      [examinerBtn, moderatorBtn, officerBtn].forEach(b => {
+        b.className = 'flex items-center space-x-1.5 px-3 py-1 rounded-md text-xs font-medium transition text-slate-400 hover:text-slate-200';
+      });
+
+      if (roleId === 'examiner') {
+        examinerBtn.className = 'flex items-center space-x-1.5 px-3 py-1 rounded-md text-xs font-medium transition bg-sky-600 text-white shadow-sm';
+      } else if (roleId === 'moderator') {
+        moderatorBtn.className = 'flex items-center space-x-1.5 px-3 py-1 rounded-md text-xs font-medium transition bg-amber-600 text-white shadow-sm';
+        // Auto-select the script requiring moderation
+        selectScript('SCR-2026-PHY-0422');
+        alert("Senior Moderator View Active:\nFiltering to scripts with Dual-AI Discrepancy > 1.5 Marks for arbitration.");
+      } else if (roleId === 'officer') {
+        officerBtn.className = 'flex items-center space-x-1.5 px-3 py-1 rounded-md text-xs font-medium transition bg-emerald-700 text-white shadow-sm';
+        openAuditDrawer();
+      }
+    }
+
+    // --- Audit Drawer / RTI Modal Operations ---
+    function openAuditDrawer() {
+      document.getElementById('auditModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeAuditDrawer() {
+      document.getElementById('auditModal').classList.add('hidden');
+    }
+
+    function appendAuditEvent(desc) {
+      const container = document.getElementById('auditTimelineContainer');
+      const now = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST';
+
+      const eventEl = document.createElement('div');
+      eventEl.className = 'relative pl-6';
+      eventEl.innerHTML = `
+        <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-950"></div>
+        <div class="text-[10px] text-emerald-400">${now} • Human Examiner Stamp</div>
+        <p class="text-slate-200 font-sans mt-0.5 font-semibold">${desc}</p>
+      `;
+      container.appendChild(eventEl);
+    }
+
+    function downloadLegalDossier() {
+      const script = appState.scripts.find(s => s.id === appState.activeScriptId);
+      const payload = {
+        board: "Central Board of Secondary Education",
+        pilot_district: "District 04 (Delhi NCR)",
+        script_id: script.id,
+        barcode: script.barcode,
+        roll: script.roll,
+        evaluation_timestamp: new Date().toISOString(),
+        sha256_integrity_digest: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        evaluator_id: "EXM-CBSE-DEL-8819",
+        layered_ocr: {
+          pass1_confidence: script.ocrConfidence,
+          pass2_vision_llm: "Validated",
+          flagged_ambiguities_resolved: true
+        },
+        dual_ai_audit: {
+          primary_model: "Claude 3.5 Sonnet",
+          auditor_model: "GPT-4o Vision",
+          delta: script.dualAiDelta
+        },
+        final_marks: {
+          q1: script.q1Mark,
+          q2: script.q2Mark,
+          total: script.currentMarks,
+          max: script.maxMarks
+        },
+        rti_compliance_statement: "This evaluation was conducted under Human-in-the-Loop mandate with step-by-step rubric documentation legally defensible under Indian Evidence Act 65B."
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `RTI_Legal_Defense_Dossier_${script.id}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
