@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nyaya — AI Answer Sheet Grading System</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230284c7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .slide { display: none; }
+    .slide.active { display: flex; }
+    .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.6); }
+  </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden bg-slate-950 text-slate-100 select-none">
+
+  <!-- TOP BAR -->
+  <header class="bg-slate-900/90 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between z-30 shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+        <i data-lucide="shield-check" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-sm tracking-tight text-white flex items-center space-x-2">
+          <span>Nyaya &bull; AI Grading System</span>
+          <span class="text-[10px] bg-sky-950 text-sky-300 border border-sky-800 px-1.5 py-0.5 rounded-full font-mono">10 SLIDE DECK</span>
+        </h1>
+        <p class="text-[10px] text-slate-400 font-mono">Universal Board Examination Evaluation Platform</p>
+      </div>
+    </div>
+
+    <!-- Navigation & Download controls -->
+    <div class="flex items-center space-x-2">
+      <button onclick="toggleNotes()" id="notesToggleBtn" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 transition">
+        <i data-lucide="message-square" class="w-3.5 h-3.5 text-sky-400"></i>
+        <span>Speaker Notes (<span class="font-mono">N</span>)</span>
+      </button>
+
+      <a href="/AI_Grading_System_10_Slide_Presentation.pptx" download class="flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-md shadow-emerald-700/20 transition active:scale-95">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <span>Download PPTX</span>
+      </a>
+
+      <a href="/index.html" class="flex items-center space-x-1.5 bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-md shadow-sky-500/20 transition active:scale-95">
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        <span>Live Web App</span>
+      </a>
+
+      <button onclick="toggleFullscreen()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition" title="Toggle Fullscreen (F)">
+        <i data-lucide="maximize-2" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- SLIDES MAIN CONTAINER -->
+  <main class="flex-1 flex relative overflow-hidden p-3 sm:p-6 items-center justify-center bg-radial from-slate-900 to-slate-950">
+    
+    <!-- SLIDE 1 -->
+    <div class="slide active w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="1" data-notes="Welcome everyone. Today we are presenting the AI Answer Sheet Grading System, a modern platform engineered specifically for high-stakes theory board examinations. It merges advanced Vision AI with mandatory human examiner oversight to cut grading backlogs by 70% while guaranteeing 100% RTI defensibility.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-sky-950/80 border border-sky-700/60 px-3 py-1 rounded-full text-sky-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>SLIDE 01/10 • SYSTEM OVERVIEW</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            AI-Assisted Theory Exam Evaluation
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            High-Trust Vision AI Scoring with Human-in-the-Loop Examiner Review
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Multimodal Handwriting OCR</h4>
+              <p class="text-xs text-slate-400">Transcribes cursive handwriting and STEM equations via Claude Vision.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Rubric-Aligned Evaluation</h4>
+              <p class="text-xs text-slate-400">Maps student steps deterministically against board marking schemes.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">100% Human Examiner Control</h4>
+              <p class="text-xs text-slate-400">Examiner reviews, approves, or overrides with mandatory typed reason.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-sky-950/40 border border-sky-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-sky-300 flex items-center justify-between">
+          <span>KEY CAPABILITY: ENTERPRISE BOARD GRADE</span>
+          <span class="text-sky-400 font-mono">HIGH FIDELITY</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-sky-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/ai_grading_hero_1788536140812.jpg" alt="AI Grading Cover" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="2" data-notes="Every examination season, state and national boards face the same crisis: exhausted examiners grading hundreds of thousands of handwritten scripts late into the night. Fatigue introduces variance, missed sub-questions, and retotalling errors that lead to costly re-evaluations and court litigations.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-amber-950/80 border border-amber-700/60 px-3 py-1 rounded-full text-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>SLIDE 02/10 • THE CORE PROBLEM</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            The Crisis in Theory Exam Evaluation
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            Manual evaluation cannot keep pace with millions of handwritten board exams
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-amber-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Massive Script Backlog</h4>
+              <p class="text-xs text-slate-400">Millions of physical answer sheets processed under grueling deadlines.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-amber-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Examiner Fatigue & Variance</h4>
+              <p class="text-xs text-slate-400">Grading drift and retotalling errors spike after hours of continuous grading.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-amber-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Zero Defense in Disputes</h4>
+              <p class="text-xs text-slate-400">RTI and re-evaluation requests lack auditable, step-by-step mark justification.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-amber-950/40 border border-amber-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-amber-300 flex items-center justify-between">
+          <span>CHALLENGE: 60+ DAY DELAYS</span>
+          <span class="text-amber-400 font-mono">HIGH RETOTALLING ERRORS</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-amber-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/exam_bottleneck_1788536166555.jpg" alt="Exam Bottleneck" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="3" data-notes="Our system does not replace examiners; it supercharges them. The AI handles transcription and rubric matching, presenting a pre-scored draft with complete reasoning and confidence levels. The human examiner remains in the loop to verify and approve every score.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-700/60 px-3 py-1 rounded-full text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>SLIDE 03/10 • THE ARCHITECTURAL SOLUTION</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            Human-in-the-Loop AI Grading
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            AI assists the examiner — humans retain final institutional authority
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">AI Does the Heavy Lifting</h4>
+              <p class="text-xs text-slate-400">Automates handwriting transcription, rubric mapping, and draft scoring in seconds.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Examiner Makes the Decision</h4>
+              <p class="text-xs text-slate-400">One-click 'Approve', 'Override' (with required rationale), or 'Flag' for moderator.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Transparent Confidence Meter</h4>
+              <p class="text-xs text-slate-400">Color-coded Green/Yellow/Red confidence rating visible at a single glance.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-950/40 border border-emerald-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-emerald-300 flex items-center justify-between">
+          <span>EFFICIENCY: 70% FASTER GRADING</span>
+          <span class="text-emerald-400 font-mono">100% HUMAN VERIFIED</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-emerald-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/ai_human_grading_1788536187917.jpg" alt="Human AI Grading" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="4" data-notes="Here is the technical foundation: The front end is a responsive React application optimized for desktop and tablet evaluation. The backend is an asynchronous FastAPI service communicating with Claude 3.5 Sonnet Vision and persisting all data in PostgreSQL with pluggable local/S3 storage.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-sky-950/80 border border-sky-700/60 px-3 py-1 rounded-full text-sky-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="cpu" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>SLIDE 04/10 • SYSTEM ARCHITECTURE</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            Production Tech Stack & Flow
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            Built with modern, enterprise-grade open-source and cloud infrastructure
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Frontend Canvas</h4>
+              <p class="text-xs text-slate-400">React 18 + Tailwind CSS with split-screen synchronized viewer.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Backend Core</h4>
+              <p class="text-xs text-slate-400">FastAPI Python engine with asynchronous queue & S3-compatible storage.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Intelligence & Storage</h4>
+              <p class="text-xs text-slate-400">Claude 3.5 Sonnet Vision API + PostgreSQL append-only audit ledger.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-sky-950/40 border border-sky-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-sky-300 flex items-center justify-between">
+          <span>STACK: REACT • FASTAPI • POSTGRES</span>
+          <span class="text-sky-400 font-mono">CLAUDE VISION API</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-sky-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/slide4_architecture.jpg" alt="System Architecture" class="w-full h-full object-contain">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="5" data-notes="In the ingestion stage, administrators upload student scripts via multi-file or full directory upload. The system automatically parses roll numbers and pairs each script with the Master Question Paper and rubric JSON, ensuring strict version control.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-sky-950/80 border border-sky-700/60 px-3 py-1 rounded-full text-sky-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>SLIDE 05/10 • INGESTION & SETUP</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            Answer Sheets & Master Rubric
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            Frictionless ingestion of student scripts and board marking schemes
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Batch Folder & PDF Ingestion</h4>
+              <p class="text-xs text-slate-400">Upload entire examination centers in bulk with automated roll/barcode parsing.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Master Question Paper Sync</h4>
+              <p class="text-xs text-slate-400">Structured marking criteria JSON with maximum marks and sub-step allocations.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">SHA-256 Tamper Proofing</h4>
+              <p class="text-xs text-slate-400">Every script is cryptographically hashed upon upload to prevent substitution.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-sky-950/40 border border-sky-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-sky-300 flex items-center justify-between">
+          <span>INGESTION: MULTI-FORMAT BULK</span>
+          <span class="text-sky-400 font-mono">SHA-256 INTEGRITY</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-sky-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/slide5_ingestion.jpg" alt="Ingestion Pipeline" class="w-full h-full object-contain">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="6" data-notes="The vision pipeline extracts the student's handwritten response and evaluates it step-by-step against the official rubric. It doesn't just produce a score; it writes a detailed explanation of marks awarded or deducted, stamped with a clear confidence level.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-700/60 px-3 py-1 rounded-full text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="eye" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>SLIDE 06/10 • VISION AI PIPELINE</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            Handwriting to Rubric Reasoning
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            Multi-pass multimodal intelligence evaluates each answer step-by-step
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Cursive & Formula Parsing</h4>
+              <p class="text-xs text-slate-400">Vision LLM deciphers handwriting, math equations, and diagram annotations.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Rubric Criteria Alignment</h4>
+              <p class="text-xs text-slate-400">Evaluates method, intermediate calculations, units, and final answers.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Color-Coded Confidence</h4>
+              <p class="text-xs text-slate-400">High (>90% Green), Medium (75-90% Yellow), Low (<75% Red) quality index.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-950/40 border border-emerald-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-emerald-300 flex items-center justify-between">
+          <span>PIPELINE: STEP-BY-STEP REASONING</span>
+          <span class="text-emerald-400 font-mono">CONFIDENCE: GREEN/AMBER/RED</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-emerald-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/vision_ocr_rubric_1788536210161.jpg" alt="Vision AI OCR" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="7" data-notes="The grading screen provides a split-view interface. On the left is the raw handwritten scan with zoom and rotation. On the right is the AI's suggested score and reasoning. If an examiner disagrees with the AI, the override modal enforces typing a written reason before submission.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-sky-950/80 border border-sky-700/60 px-3 py-1 rounded-full text-sky-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>SLIDE 07/10 • EXAMINER WORKSPACE</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            Split-Screen Examiner Experience
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            Clean, distraction-free environment built for hours of efficient grading
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Side-by-Side Canvas</h4>
+              <p class="text-xs text-slate-400">High-res original answer script on the left; AI rubric breakdown on the right.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">One-Click Actions</h4>
+              <p class="text-xs text-slate-400">Instantly Approve AI marks or Flag for Senior Moderator review.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-sky-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Mandatory Override Rationale</h4>
+              <p class="text-xs text-slate-400">Hard requirement: Examiner must enter a typed reason to override any score.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-sky-950/40 border border-sky-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-sky-300 flex items-center justify-between">
+          <span>GRADING: APPROVE • OVERRIDE • FLAG</span>
+          <span class="text-sky-400 font-mono">TYPED OVERRIDE MANDATE</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-sky-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/split_screen_ui_1788536269578.jpg" alt="Examiner UI" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="8" data-notes="Accountability is paramount. Every evaluation is recorded in an immutable append-only audit log. In the event of an RTI inquiry or re-check, the board can produce the exact timestamp, examiner identity, original script, and step-by-step reasoning.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-700/60 px-3 py-1 rounded-full text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>SLIDE 08/10 • GOVERNANCE & COMPLIANCE</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            Append-Only Audit Trail & RTI Defense
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            Complete transparency and institutional accountability for every mark
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Immutable Event Ledger</h4>
+              <p class="text-xs text-slate-400">Every AI suggestion, examiner override, timestamp, and user ID logged permanently.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Zero Black-Box Mystery</h4>
+              <p class="text-xs text-slate-400">Every awarded half-mark is backed by transcribed text and rubric criteria.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Instant Legal & RTI Defense</h4>
+              <p class="text-xs text-slate-400">Export certified evaluation reports with examiner signatures in seconds.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-950/40 border border-emerald-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-emerald-300 flex items-center justify-between">
+          <span>AUDIT: 100% RTI DEFENSIVE</span>
+          <span class="text-emerald-400 font-mono">APPEND-ONLY AUDIT LOG</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-emerald-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/audit_trail_rti_1788536296243.jpg" alt="Audit Trail" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="9" data-notes="The Admin Dashboard provides live visibility across examination centers. Administrators track the override rate, average transcription confidence, and evaluation speed in real-time, catching anomalies and grading drift early.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-amber-950/80 border border-amber-700/60 px-3 py-1 rounded-full text-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>SLIDE 09/10 • BATCH MONITORING</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            Admin Dashboard & Quality Control
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            Macro-level visibility across examination centers and examiner cohorts
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-amber-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Real-Time Pipeline Status</h4>
+              <p class="text-xs text-slate-400">Live counters for Pending, Graded, and Flagged scripts across batches.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-amber-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Override Rate Tracking</h4>
+              <p class="text-xs text-slate-400">Monitors examiner divergence to detect ambiguous rubrics or grading bias.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-amber-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Average Confidence Index</h4>
+              <p class="text-xs text-slate-400">Guarantees scan quality and flags illegible batches automatically.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-amber-950/40 border border-amber-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-amber-300 flex items-center justify-between">
+          <span>ANALYTICS: OVERRIDE RATE TRACKING</span>
+          <span class="text-amber-400 font-mono">AVG CONFIDENCE & BATCH METRICS</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-amber-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/slide9_analytics.jpg" alt="Admin Analytics" class="w-full h-full object-contain">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide w-full max-w-6xl h-full flex flex-col md:flex-row items-center gap-6 glass-card p-6 md:p-8 rounded-2xl shadow-2xl relative" data-slide="10" data-notes="In conclusion, the AI Answer Sheet Grading System delivers 3.5x faster grading turnaround, completely eliminates retotalling errors, and provides bulletproof institutional defense. It is the gold standard for next-generation board examinations.">
+      <div class="flex-1 flex flex-col justify-between h-full space-y-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-700/60 px-3 py-1 rounded-full text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3">
+            <i data-lucide="rocket" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>SLIDE 10/10 • IMPACT & ROADMAP</span>
+          </div>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+            Transformational Impact & Future
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base font-normal">
+            Scaling trust, speed, and accuracy for state and national exam boards
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">70% Faster Results</h4>
+              <p class="text-xs text-slate-400">Reduces evaluation turnaround from 60 days to under 18 days.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Zero Retotalling Errors</h4>
+              <p class="text-xs text-slate-400">Automated tallying eliminates missed questions and mathematical mistakes.</p>
+            </div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start space-x-3">
+            <div class="w-2 h-10 rounded-full bg-emerald-500 shrink-0"></div>
+            <div>
+              <h4 class="text-sm font-semibold text-white">Next Generation Scaling</h4>
+              <p class="text-xs text-slate-400">Support for 12 regional Indic languages, math LaTeX, and multi-region cloud sync.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-950/40 border border-emerald-800/60 rounded-lg py-2 px-4 text-xs font-semibold text-emerald-300 flex items-center justify-between">
+          <span>IMPACT: 3.5x FASTER EVALUATION</span>
+          <span class="text-emerald-400 font-mono">ZERO RETOTALLING DEFECTS</span>
+        </div>
+      </div>
+
+      <div class="flex-1 h-full flex items-center justify-center">
+        <div class="w-full h-full max-h-[480px] rounded-xl overflow-hidden border-2 border-emerald-500/40 shadow-xl bg-slate-900 flex items-center justify-center">
+          <img src="slides_assets/slide10_impact.jpg" alt="Impact and Roadmap" class="w-full h-full object-contain">
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SPEAKER NOTES DRAWER -->
+  <div id="notesDrawer" class="hidden bg-slate-900 border-t border-slate-800 px-6 py-3 flex items-start space-x-3 shrink-0 transition-all">
+    <div class="p-1.5 rounded-lg bg-sky-950 text-sky-400 shrink-0">
+      <i data-lucide="mic" class="w-4 h-4"></i>
+    </div>
+    <div class="flex-1">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-sky-400 uppercase tracking-wider">Speaker Talking Points</span>
+        <span id="notesSlideLabel" class="text-[11px] font-mono text-slate-400">Slide 1/10</span>
+      </div>
+      <p id="notesContent" class="text-xs text-slate-300 mt-1 leading-relaxed"></p>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION CONTROLS -->
+  <footer class="bg-slate-900 border-t border-slate-800 px-4 py-3 flex items-center justify-between shrink-0 z-30">
+    <!-- Previous button -->
+    <button onclick="prevSlide()" id="prevBtn" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-semibold border border-slate-700 transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
+      <i data-lucide="chevron-left" class="w-4 h-4"></i>
+      <span>Previous</span>
+    </button>
+
+    <!-- Slide Indicators -->
+    <div class="flex items-center space-x-2">
+      <div id="indicators" class="flex items-center space-x-1.5"></div>
+      <span id="slideCounter" class="text-xs font-mono text-slate-400 ml-2">1 / 10</span>
+    </div>
+
+    <!-- Next button -->
+    <button onclick="nextSlide()" id="nextBtn" class="flex items-center space-x-1.5 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-md shadow-sky-500/20 transition active:scale-95">
+      <span>Next</span>
+      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+    </button>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function renderIndicators() {
+      const container = document.getElementById('indicators');
+      container.innerHTML = '';
+      for (let i = 1; i <= totalSlides; i++) {
+        const dot = document.createElement('button');
+        dot.className = `w-2.5 h-2.5 rounded-full transition-all ${i === currentSlide ? 'bg-sky-400 w-6' : 'bg-slate-700 hover:bg-slate-500'}`;
+        dot.onclick = () => goToSlide(i);
+        container.appendChild(dot);
+      }
+      document.getElementById('slideCounter').innerText = `${currentSlide} / ${totalSlides}`;
+      document.getElementById('prevBtn').disabled = currentSlide === 1;
+      document.getElementById('nextBtn').innerText = currentSlide === totalSlides ? 'Finish' : 'Next';
+    }
+
+    function updateSlide() {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const activeSlideEl = document.querySelector(`.slide[data-slide="${currentSlide}"]`);
+      if (activeSlideEl) {
+        activeSlideEl.classList.add('active');
+        const notes = activeSlideEl.getAttribute('data-notes') || '';
+        document.getElementById('notesContent').innerText = notes;
+        document.getElementById('notesSlideLabel').innerText = `Slide ${currentSlide}/${totalSlides}`;
+      }
+      renderIndicators();
+      lucide.createIcons();
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(num) {
+      currentSlide = num;
+      updateSlide();
+    }
+
+    function toggleNotes() {
+      const drawer = document.getElementById('notesDrawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotes();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    });
+
+    // Initialize
+    updateSlide();
+    lucide.createIcons();
+  </script>
+</body>
+</html>

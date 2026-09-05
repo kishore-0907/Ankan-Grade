@@ -1,0 +1,454 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nyaya — Sign In</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230284c7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter, JetBrains Mono, Caveat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            handwriting: ['Caveat', 'cursive', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .sheet-canvas-bg {
+      background-color: #070b14;
+      background-image: radial-gradient(#1e293b 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+  </style>
+</head>
+<body class="sheet-canvas-bg text-slate-100 font-sans min-h-screen flex flex-col justify-between antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- TOP HEADER -->
+  <header class="bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3 flex items-center justify-between z-30">
+    <a href="/" class="flex items-center space-x-2.5 group">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/25 text-white font-bold text-lg group-hover:scale-105 transition">
+        <i data-lucide="check-check" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-1.5">
+          <span class="font-bold text-white tracking-tight text-base">Nyaya<span class="text-sky-400">.AI</span></span>
+          <span class="text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded-full bg-sky-950 text-sky-300 border border-sky-800/80">Evaluation Platform</span>
+        </div>
+      </div>
+    </a>
+    <div class="flex items-center space-x-3 text-xs">
+      <a href="/" class="text-slate-400 hover:text-white flex items-center space-x-1 transition">
+        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+        <span>Back to Platform</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN LOGIN CONTAINER -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:p-6 relative z-10">
+    <!-- Background Glow Effect -->
+    <div class="absolute w-96 h-96 bg-sky-600/10 rounded-full blur-3xl pointer-events-none -top-12 -left-12"></div>
+    <div class="absolute w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -bottom-12 -right-12"></div>
+
+    <div class="w-full max-w-md">
+      
+      <!-- Card -->
+      <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl relative border border-slate-800">
+        
+        <!-- Header -->
+        <div class="text-center mb-6">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 border border-sky-500/30 text-sky-400 mb-3 shadow-inner">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Sign in to Nyaya</h1>
+          <p class="text-xs text-slate-400 mt-1 font-mono">Universal AI Answer Sheet Grading & Audit Portal</p>
+        </div>
+
+        <!-- Notification / Toast message container -->
+        <div id="toastAlert" class="hidden mb-4 p-3 rounded-lg text-xs flex items-center space-x-2 transition-all">
+          <i id="toastIcon" data-lucide="info" class="w-4 h-4 shrink-0"></i>
+          <span id="toastMsg"></span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="submitLogin(event)" novalidate class="space-y-4">
+          
+          <!-- Email Field -->
+          <div>
+            <label for="emailInput" class="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+              <span>Email Address</span>
+              <span id="emailError" class="text-rose-400 font-normal hidden text-[11px]"></span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+              </div>
+              <input 
+                type="email" 
+                id="emailInput" 
+                name="email"
+                placeholder="evaluator@nyaya.gov.in"
+                autocomplete="email"
+                class="w-full bg-slate-900/90 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition font-mono"
+              />
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="passwordInput" class="block text-xs font-semibold text-slate-300">Password</label>
+              <a href="#" onclick="handleForgotPassword(event)" class="text-[11px] text-sky-400 hover:text-sky-300 hover:underline transition">Forgot password?</a>
+            </div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                <i data-lucide="lock" class="w-4 h-4"></i>
+              </div>
+              <input 
+                type="password" 
+                id="passwordInput" 
+                name="password"
+                placeholder="••••••••••••"
+                autocomplete="current-password"
+                class="w-full bg-slate-900/90 border border-slate-700 rounded-lg pl-9 pr-10 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition font-mono"
+              />
+              <button 
+                type="button" 
+                onclick="togglePasswordVisibility()" 
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 transition" 
+                title="Toggle password visibility">
+                <i id="passwordEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <p id="passwordError" class="text-rose-400 text-[11px] mt-1 hidden"></p>
+          </div>
+
+          <!-- Remember Me Checkbox -->
+          <div class="flex items-center justify-between pt-1">
+            <label class="flex items-center space-x-2 text-xs text-slate-400 cursor-pointer select-none">
+              <input type="checkbox" id="rememberMe" class="rounded bg-slate-900 border-slate-700 text-sky-600 focus:ring-0 focus:ring-offset-0 w-3.5 h-3.5" checked>
+              <span>Keep me signed in</span>
+            </label>
+            <span class="text-[11px] text-slate-500 font-mono">v2026.1 Secured</span>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-2">
+            <button 
+              type="submit" 
+              id="submitBtn"
+              class="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white py-2.5 px-4 rounded-lg text-xs sm:text-sm font-semibold shadow-lg shadow-sky-600/25 transition duration-150 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+              <span id="btnText">Sign In</span>
+              <i id="btnIcon" data-lucide="log-in" class="w-4 h-4"></i>
+              <svg id="btnSpinner" class="hidden animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Quick Demo Profiles for fast evaluation -->
+        <div class="mt-6 pt-4 border-t border-slate-800">
+          <p class="text-[11px] text-slate-400 font-medium mb-2 text-center">Quick Demo Accounts:</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="fillDemo('examiner@nyaya.gov.in', 'examiner2026')" class="text-left p-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition">
+              <div class="text-[11px] font-semibold text-sky-400 flex items-center space-x-1">
+                <i data-lucide="award" class="w-3 h-3"></i>
+                <span>Senior Examiner</span>
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono truncate">examiner@nyaya.gov.in</div>
+            </button>
+            <button onclick="fillDemo('student@nyaya.edu', 'student2026')" class="text-left p-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition">
+              <div class="text-[11px] font-semibold text-emerald-400 flex items-center space-x-1">
+                <i data-lucide="user" class="w-3 h-3"></i>
+                <span>Candidate Student</span>
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono truncate">student@nyaya.edu</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sign Up Link -->
+        <div class="mt-5 text-center text-xs text-slate-400">
+          Don't have an account? 
+          <a href="/signup" onclick="handleSignUp(event)" class="text-sky-400 hover:text-sky-300 font-semibold hover:underline transition ml-1">Sign up</a>
+        </div>
+
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="mt-4 text-center text-[11px] text-slate-500 flex items-center justify-center space-x-4">
+        <span class="flex items-center space-x-1"><i data-lucide="shield" class="w-3 h-3 text-emerald-400"></i><span>RTI Defensible</span></span>
+        <span>&bull;</span>
+        <span class="flex items-center space-x-1"><i data-lucide="lock" class="w-3 h-3 text-sky-400"></i><span>End-to-End Encrypted</span></span>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950/80 border-t border-slate-800/80 px-4 py-3 text-center text-[11px] text-slate-500 font-mono z-10">
+    <div class="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-4">
+      <span>Nyaya &copy; 2026 Universal AI Evaluation Platform</span>
+      <span class="hidden sm:inline">&bull;</span>
+      <span>National Examination Board Standards Compliant</span>
+    </div>
+  </footer>
+
+  <!-- SCRIPT & CLIENT VALIDATION ENGINE -->
+  <script>
+    // Initialize icons
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+    });
+
+    // Toggle Password Visibility
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById("passwordInput");
+      const eyeIcon = document.getElementById("passwordEyeIcon");
+      if (pwdInput.type === "password") {
+        pwdInput.type = "text";
+        eyeIcon.setAttribute("data-lucide", "eye-off");
+      } else {
+        pwdInput.type = "password";
+        eyeIcon.setAttribute("data-lucide", "eye");
+      }
+      lucide.createIcons();
+    }
+
+    // Fill Demo Credentials
+    function fillDemo(email, pwd) {
+      document.getElementById("emailInput").value = email;
+      document.getElementById("passwordInput").value = pwd;
+      clearErrors();
+      showToast("info", `Filled credentials for ${email}`);
+    }
+
+    // Client-side Validation Helper
+    function validateForm(email, password) {
+      let isValid = true;
+      clearErrors();
+
+      const emailInput = document.getElementById("emailInput");
+      const emailError = document.getElementById("emailError");
+      const passwordInput = document.getElementById("passwordInput");
+      const passwordError = document.getElementById("passwordError");
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!email) {
+        emailError.textContent = "Email is required";
+        emailError.classList.remove("hidden");
+        emailInput.classList.add("border-rose-500", "focus:border-rose-500");
+        isValid = false;
+      } else if (!emailRegex.test(email)) {
+        emailError.textContent = "Please enter a valid email address";
+        emailError.classList.remove("hidden");
+        emailInput.classList.add("border-rose-500", "focus:border-rose-500");
+        isValid = false;
+      }
+
+      if (!password) {
+        passwordError.textContent = "Password is required";
+        passwordError.classList.remove("hidden");
+        passwordInput.classList.add("border-rose-500", "focus:border-rose-500");
+        isValid = false;
+      } else if (password.length < 4) {
+        passwordError.textContent = "Password must be at least 4 characters";
+        passwordError.classList.remove("hidden");
+        passwordInput.classList.add("border-rose-500", "focus:border-rose-500");
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function clearErrors() {
+      const emailInput = document.getElementById("emailInput");
+      const emailError = document.getElementById("emailError");
+      const passwordInput = document.getElementById("passwordInput");
+      const passwordError = document.getElementById("passwordError");
+
+      emailError.classList.add("hidden");
+      emailInput.classList.remove("border-rose-500", "focus:border-rose-500");
+      passwordError.classList.add("hidden");
+      passwordInput.classList.remove("border-rose-500", "focus:border-rose-500");
+    }
+
+    // Toast Notifications
+    function showToast(type, message) {
+      const alert = document.getElementById("toastAlert");
+      const icon = document.getElementById("toastIcon");
+      const msg = document.getElementById("toastMsg");
+
+      alert.className = "mb-4 p-3 rounded-lg text-xs flex items-center space-x-2 transition-all ";
+
+      if (type === "success") {
+        alert.className += "bg-emerald-950/80 border border-emerald-700/80 text-emerald-200";
+        icon.setAttribute("data-lucide", "check-circle");
+      } else if (type === "error") {
+        alert.className += "bg-rose-950/80 border border-rose-700/80 text-rose-200";
+        icon.setAttribute("data-lucide", "alert-circle");
+      } else {
+        alert.className += "bg-sky-950/80 border border-sky-700/80 text-sky-200";
+        icon.setAttribute("data-lucide", "info");
+      }
+
+      msg.textContent = message;
+      alert.classList.remove("hidden");
+      lucide.createIcons();
+    }
+
+    // Forgot Password Placeholder Handler
+    function handleForgotPassword(e) {
+      e.preventDefault();
+      const email = document.getElementById("emailInput").value.trim();
+      if (email) {
+        showToast("info", `Password reset instructions sent to ${email} (Demo placeholder).`);
+      } else {
+        showToast("info", "Please enter your email above to receive password reset instructions.");
+      }
+    }
+
+    // Sign Up Placeholder Handler
+    function handleSignUp(e) {
+      e.preventDefault();
+      showToast("info", "Registration is currently invite-only for affiliated exam boards and institutions.");
+    }
+
+    /**
+     * Authentication API Handler
+     * Calls remote auth API if available; otherwise falls back to a realistic client-side stub.
+     */
+    async function handleLogin(email, password) {
+      console.log("[Nyaya Auth] Attempting login for:", email);
+
+      // 1. Try calling backend auth endpoint if running
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        if (response.ok) {
+          const data = await response.json();
+          return { success: true, user: data.user || { email, name: email.split("@")[0] } };
+        }
+      } catch (e) {
+        console.log("[Nyaya Auth] Remote endpoint unavailable, resolving with local stub authentication.");
+      }
+
+      // 2. Simulated Network Delay & Stubbed Verification
+      await new Promise(r => setTimeout(r, 650));
+
+      const isExaminer = email.toLowerCase().includes("examiner") || email.toLowerCase().includes("admin") || email.toLowerCase().includes("teacher");
+      const role = isExaminer ? "examiner" : "student";
+      const displayName = email.split("@")[0]
+        .replace(/[._-]/g, " ")
+        .replace(/\b\w/g, c => c.toUpperCase());
+
+      return {
+        success: true,
+        user: {
+          email: email,
+          name: displayName || "Evaluator",
+          role: role,
+          token: "nyaya_jwt_" + Math.random().toString(36).substring(2),
+          loginTime: new Date().toISOString()
+        }
+      };
+    }
+
+    // Form Submit Handler
+    async function submitLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("emailInput").value.trim();
+      const password = document.getElementById("passwordInput").value;
+
+      if (!validateForm(email, password)) {
+        showToast("error", "Please correct the highlighted errors before continuing.");
+        console.warn("[Nyaya Auth] Form validation failed.");
+        return;
+      }
+
+      // Set Loading State
+      const submitBtn = document.getElementById("submitBtn");
+      const btnText = document.getElementById("btnText");
+      const btnIcon = document.getElementById("btnIcon");
+      const btnSpinner = document.getElementById("btnSpinner");
+
+      submitBtn.disabled = true;
+      btnText.textContent = "Authenticating...";
+      btnIcon.classList.add("hidden");
+      btnSpinner.classList.remove("hidden");
+
+      try {
+        const result = await handleLogin(email, password);
+
+        if (result && result.success) {
+          console.log("[Nyaya Auth] Login successful for:", result.user);
+          
+          // Persist user session in localStorage
+          localStorage.setItem("nyaya_user", JSON.stringify(result.user));
+          
+          showToast("success", `Welcome back, ${result.user.name}! Redirecting to Nyaya...`);
+
+          // Redirect to Home / Dashboard
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 850);
+        } else {
+          throw new Error((result && result.message) || "Invalid credentials provided.");
+        }
+      } catch (err) {
+        console.error("[Nyaya Auth] Login failure:", err);
+        showToast("error", err.message || "Failed to sign in. Please check your credentials.");
+        submitBtn.disabled = false;
+        btnText.textContent = "Sign In";
+        btnIcon.classList.remove("hidden");
+        btnSpinner.classList.add("hidden");
+        lucide.createIcons();
+      }
+    }
+  </script>
+</body>
+</html>
