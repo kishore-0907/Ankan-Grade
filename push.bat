@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 title Push Ankan-Grade to GitHub (kishore-0907)
-cd /d "C:\Users\Shivany\.gemini\antigravity\scratch\nyaya-evaluator"
+cd /d "%~dp0"
 
 echo ===================================================================
 echo   Nyaya / Ankan-Grade — One-Click GitHub Push Tool

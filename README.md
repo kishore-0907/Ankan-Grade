@@ -1,10 +1,13 @@
-# Ankan-Grade (VeritasEval AI) 🛡️📝
+# Ankan-Grade (Nyaya / VeritasEval AI) 🛡️📝
 > **Board-Grade Descriptive Answer Sheet Evaluation & RTI Legal Defense Infrastructure**
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Cloudflare%20Tunnel-6366f1.svg)](https://concord-george-kidney-viewed.trycloudflare.com/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Flask 3.1+](https://img.shields.io/badge/framework-Flask-lightgrey.svg)](https://flask.palletsprojects.com/)
 [![Compliance](https://img.shields.io/badge/Compliance-RTI%20%26%20IT%20Act%2065B-emerald.svg)](#legal-defense--audit-trail)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+> 🌐 **Live Tunnel Host:** [https://concord-george-kidney-viewed.trycloudflare.com/](https://concord-george-kidney-viewed.trycloudflare.com/)
 
 ---
 
@@ -86,12 +89,21 @@ Visit **[http://127.0.0.1:5000](http://127.0.0.1:5000)** or **[http://localhost:
 
 ```plaintext
 Ankan-Grade/
+├── backend/               # FastAPI async backend (Claude vision client, DB, models)
+├── templates/
+│   └── index.html         # Main Evaluation Dashboard
+├── index.html             # Standalone web app / GitHub Pages root
+├── login.html             # Role-based authentication & sign-in page
+├── slides.html            # Interactive 10-slide architectural pitch deck
+├── slides_assets/         # Pitch deck illustrations & diagrams
+├── AI_Grading_System_10_Slide_Presentation.pptx # Master PowerPoint deck
 ├── app.py                 # Core Flask backend server & REST API
+├── server.py              # Lightweight static HTTP server
 ├── requirements.txt       # Python dependencies
+├── push.bat               # Interactive 1-click GitHub push tool
+├── run_app.bat            # 1-click local server launcher
 ├── .gitignore             # Git ignore configuration
-├── README.md              # Project documentation & architecture guide
-└── templates/
-    └── index.html         # Single-page interface (Tailwind CSS, Lucide, Vanilla JS)
+└── README.md              # Project documentation & architecture guide
 ```
 
 ---
